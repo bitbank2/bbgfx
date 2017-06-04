@@ -1,0 +1,24 @@
+*** BBGFX ***
+
+BBGFX is a C/ASM library of graphics primitives primarily targeted at embedded
+and bare metal environments. The benefit of BBGFX over other graphics libraries is
+that the functions are written in optimized ARMv5 assembly language. This makes it
+useful for less capable ARM systems such as the Cortex-M series or Raspberry Pi's
+using the BCM2835 (ARMv6) CPU. BBGFX contains primitives for working with bitmaps,
+lines, circles, rectangles and supports operations with transparency and
+translucency. 
+
+To build the library, simply type 'make' in the terminal. To build the sample
+app, type 'make -f make_demo'. This will build the 'demo' executable to show
+that the library is working. By default, the demo will send output to /dev/fb0. It
+can also send output to a SPI-connected LCD using my SPI_LCD library. The fb0 device
+is assumed to be configured for 16-bits per pixel (RGB565).
+
+BBGFX depends on image functions in a limited version of my imaging library
+called 'mini_pil' - mini portable imaging library. This code is included in object
+code form with this repo. I will release it as open source in the near future.
+
+Copyright (c) 2009-2017 BitBank Software, Inc.
+Writte by Larry Bank
+bitbank@pobox.com
+
