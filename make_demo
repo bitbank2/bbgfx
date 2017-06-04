@@ -1,0 +1,14 @@
+CFLAGS=-c -ggdb -Wall -O2
+LIBS= -lpthread -lm -lz -lbbgfx -lmini_pil -lspi_lcd -lpigpio
+
+all: demo
+
+demo: demo_main.o
+	$(CC) demo_main.o $(LIBS) -o demo
+
+demo_main.o: bbgfx_demo.h demo_main.c
+	$(CC) $(CFLAGS) demo_main.c
+
+clean:
+	rm -rf *o demo
+
