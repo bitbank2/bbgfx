@@ -8,6 +8,9 @@ using the BCM2835 (ARMv6) CPU. BBGFX contains primitives for working with bitmap
 lines, circles, rectangles and supports operations with transparency and
 translucency. 
 
+Here's the demo code running on a Raspberry Pi Zero and SPI LCD display:
+https://www.youtube.com/watch?v=8VoxaDIMALA
+
 To build the library, simply type 'make' in the terminal. To build the sample
 app, type 'make -f make_demo'. This will build the 'demo' executable to show
 that the library is working. By default, the demo will send output to /dev/fb0. It
