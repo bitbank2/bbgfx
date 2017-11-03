@@ -28,8 +28,8 @@
 #include <stdint.h>
 #include <string.h>
 #include "bbgfx.h"
-#include <mini_io.h>
-#include <mini_pil.h>
+#include "mini_io.h"
+#include "mini_pil.h"
 
 void BBG_StretchBlit(BBGFX_DC *bbdc, BBBitmap *pBBMList, int iBitmap, int x, int y, int cx, int cy, unsigned short usColor, unsigned char ucTrans)
 {

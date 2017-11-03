@@ -11,17 +11,17 @@ translucency.
 Here's the demo code running on a Raspberry Pi Zero and SPI LCD display:
 https://www.youtube.com/watch?v=8VoxaDIMALA
 
-To build the library, simply type 'make' in the terminal. To build the sample
-app, type 'make -f make_demo'. This will build the 'demo' executable to show
+To build the library, simply type 'make' in the terminal. To build the demo
+app, type 'make -f make_demo'. This will build the 'bbgfxdemo' executable to show
 that the library is working. By default, the demo will send output to /dev/fb0. It
 can also send output to a SPI-connected LCD using my SPI_LCD library. The fb0 device
-is assumed to be configured for 16-bits per pixel (RGB565).
+is assumed to be configured for either 32 or 16-bits per pixel.
 
 BBGFX depends on image functions in a limited version of my imaging library
-called 'mini_pil' - mini portable imaging library. This code is included in object
-code form with this repo. I will release it as open source in the near future.
+called 'mini_pil' - mini portable imaging library. This code is included 
+with this repo.
 
 Copyright (c) 2009-2017 BitBank Software, Inc.
-Writte by Larry Bank
+Written by Larry Bank
 bitbank@pobox.com
 

@@ -1,14 +1,15 @@
-CFLAGS=-c -ggdb -Wall -O2
-LIBS= -lpthread -lm -lz -lbbgfx -lmini_pil -lspi_lcd -lpigpio
+CFLAGS=-c -marm -Wall -O2
+LIBS= -lpthread -lbbgfx -lz
+#LIBS= -lpthread -lbbgfx -lz -lspi_lcd
 
-all: demo
+all: bbgfxdemo
 
-demo: demo_main.o
-	$(CC) demo_main.o $(LIBS) -o demo
+bbgfxdemo: demo_main.o
+	$(CC) demo_main.o $(LIBS) -o bbgfxdemo
 
 demo_main.o: bbgfx_demo.h demo_main.c
 	$(CC) $(CFLAGS) demo_main.c
 
 clean:
-	rm -rf *o demo
+	rm *o bbgfxdemo
 

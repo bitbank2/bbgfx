@@ -32,12 +32,11 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 
-#include <mini_io.h>
 #include <zlib.h>
 #include "bbgfx.h"
 #include "bbgfx_demo.h"
-#include <mini_pil.h>
-#include <mini_io.h>
+#include "mini_io.h"
+#include "mini_pil.h"
 
 #ifndef FALSE
 #define FALSE 0
@@ -188,6 +187,29 @@ void InitFB(void)
 
 } /* InitFB() */
 
+void BBG16to32(void *source, void *dest, int iLen)
+{
+int x;
+unsigned short us, *s;
+uint32_t u32, *d;
+
+    s = (unsigned short *)source;
+    d = (uint32_t *)dest;
+    for (x=0; x<iLen; x++)
+    {
+        us = *s++;
+        u32 = ((us & 0x1f) << 3);
+        u32 |= ((us & 0x1c) >> 2); // blue
+        u32 |= ((us & 0x7e0) << 5);
+        u32 |= ((us & 0x600) >> 1); // green
+        u32 |= ((us & 0xf800) << 8);
+        u32 |= ((us & 0xe000) << 3);
+        u32 |= 0xff000000; // alpha
+        *d++ = u32;
+    } // for x
+
+} /* BBG16to32() */
+
 /****************************************************************************
  *                                                                          *
  *  FUNCTION   : BBGScreenUpdate(char, HDC, int, int)                       *
@@ -201,13 +223,15 @@ void BBGScreenUpdate(int iWidth, int iHeight)
 int y;
 unsigned short *s, *d;
 
-// Note - this assumes the framebuffer is set to 16-bits per pixel
-// for 24/32-bit fb0, the pixels will need to be converted
+// Note - this assumes the framebuffer is set to 16 or 32-bits per pixel
       for (y=0; y<iHeight; y++)
          {
          s = (unsigned short *)&pBitmap[y*iPitch];
          d = (unsigned short *)&pScreen[(y * iScreenPitch)];
-         memcpy(d, s, iWidth*sizeof(short));
+         if (vinfo.bits_per_pixel == 16)
+             memcpy(d, s, iWidth*sizeof(short));
+         else if (vinfo.bits_per_pixel == 32)
+             BBG16to32(s, d, iWidth);
          }
 #else
 	spilcdBitBlt(0,0,240,320,pBitmap,480);

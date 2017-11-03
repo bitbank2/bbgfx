@@ -4,18 +4,45 @@
 /* Project started 12/7/2000 */
 /* A high speed imaging library designed for */
 /* low memory/cpu environments such as Windows CE */
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 #ifndef _PIL_H_
 #define _PIL_H_
 
-#define PIL_BUFFER_SIZE    0x200000    // 2MB max file buffer size
-#define PIL_BUFFER_HIGHWATER 0x1ff000   // 4K shy of end is a good place to reload
+#define PIL_BUFFER_SIZE    0x20000    // file buffer size
+#define PIL_BUFFER_HIGHWATER 0x1f000   // 4K shy of end is a good place to reload
+
+#ifndef _WIN32
+typedef void * HANDLE;
+#undef _cdecl
+#define _cdecl
+#undef _inline
+#define _inline
+#define	TEXT(x) (char *) x
+#include <string.h>
+#else
+#include <windows.h>
+#include <tchar.h>
+#endif
 
 // Progress indicator function
 // returns 2 possible values:
 #define PIL_PROGRESS_CONTINUE 0  // keep decoding
 #define PIL_PROGRESS_CANCEL   1  // cancel current operation
-typedef int (*PILPROGRESS)(unsigned long ulCurrent, unsigned long ulTotal);
+typedef int (_cdecl *PILPROGRESS)(unsigned long ulCurrent, unsigned long ulTotal);
 
 /* Supported compression types */
 enum pilcomps {
@@ -266,7 +293,7 @@ int iXres, iYres;	// Resolution in dots per inch
 int iDataSize;		// Size of the data
 int iX, iY;         // offsets to handle GIF properly
 int iGIFDelay;    // display delay in hundredths of seconds and EXIF subIFD offset
-int iHandle;      // open file handle for read access
+void * iHandle;      // open file handle for read access
 int iFilePos;     // current file read position (next read would start here)
 unsigned char cGIFBits; // GIF packed fields
 unsigned char cTransparent; // GIF transparent color
@@ -336,9 +363,9 @@ char szInfo2[128];         // Text info 2
 #define PIL_ERROR_AUDIO_TYPE_UNKNOWN	   -17	// Unknown audio stream in video file (no CODEC)
 
 #define INTELSHORT(p) *p + *(p+1) * 0x100
-#define INTELLONG(p) *p + *(p+1) * 0x100 + *(p+2) * 0x10000 + *(p+3) * 0x1000000
-#define MOTOSHORT(p) ((*(p))<<8) + *(p+1)
-#define MOTOLONG(p) ((*p)<<24) + ((*(p+1))<<16) + ((*(p+2))<<8) + *(p+3)
+#define INTELLONG(p) (*p + *(p+1) * 0x100 + *(p+2) * 0x10000 + *(p+3) * 0x1000000)
+#define MOTOSHORT(p) (((*(p))<<8) + *(p+1))
+#define MOTOLONG(p) (((*p)<<24) + ((*(p+1))<<16) + ((*(p+2))<<8) + *(p+3))
 #define MOTO24(p) ((*(p))<<16) + ((*(p+1))<<8) + *(p+2)
 
 #define WRITEPATTERN32(p, o, l) p[o] |= (unsigned char)(l >> 24); p[o+1] |= (unsigned char)(l >> 16); p[o+2] |= (unsigned char)(l >> 8); p[o+3] |= (unsigned char)l;
@@ -378,7 +405,7 @@ typedef struct _imgcell
 typedef struct _pilfile {
 int iSize;                 // size of the PIL_FILE structure for version checking
 long     lUser;            // user defined
-int		iFile;	   		// file handle
+void *	iFile;	   		// file handle
 int      iFileSize;        // size of source file
 unsigned char *pData;		// pointer to memory mapped file
 int *pPageList;				// list of page offsets (e.g. for TIFF performance)
@@ -409,7 +436,7 @@ extern "C" {
 #endif
 /*--- Functions of the PIL ---*/
 extern int mPILCalcSize(int x, int bpp);
-extern int mPILDraw(PIL_PAGE *pPage, PIL_VIEW *pView, int bTopDown, void *pGammaBrightness);
+extern int mPILDraw(PIL_PAGE *pPage, PIL_VIEW *pView, BOOL bTopDown, void *pGammaBrightness);
 extern int mPILOpen(char *szFileName, PIL_FILE *pFile, int iOptions);
 extern int mPILRead(PIL_FILE *pFile, PIL_PAGE *pPage, int iRequestedPage, int iOptions);
 extern int mPILClose(PIL_FILE *pFile);
@@ -422,7 +449,7 @@ extern int mPILCrop(PIL_PAGE *pPage, PIL_VIEW *pView);
 extern int mPILModify(PIL_PAGE *pPage, int iOperation, int iParam1, int iParam2);
 extern int mPILFlipv(PIL_PAGE *pPage);
 extern int mPILAnimate(PIL_PAGE *pPage, PIL_PAGE *pAnimatePage);
-extern int mPILTest(char *szFileName);
+extern BOOL mPILTest(char *szFileName);
 extern JPEGDATA * mPILPrepJPEGStruct(void);
 
 #ifdef __cplusplus
